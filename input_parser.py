@@ -25,7 +25,7 @@ class InputParser:
         return self.n_gram_size
 
     def get_smoothing_value(self):
-        return self.get_smoothing_value
+        return self.smoothing_value
 
     def get_training_file(self):
         return self.training_file
