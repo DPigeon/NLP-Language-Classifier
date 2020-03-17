@@ -1,5 +1,3 @@
-
-
 class InputParser:
     vocabulary = 0 # Vocabulary to use (0, 1 or 2)
     n_gram_size = 0 # Size of n-grams (1, 2 or 3)
@@ -18,12 +16,12 @@ class InputParser:
     tweet_testing_usernames = []
     tweet_testing_languages = []
     tweet_testing_messages = []
-    
+
     def __init__(self, file_path):
         with open(file_path) as file:
             for line in file:
-                number = line.split() # Becoming strings. We have to convert to integer
-				# Storing into separate lists
+                number = line.split()  # Becoming strings. We have to convert to integer
+                # Storing into separate lists
                 self.vocabulary = number[0]
                 self.n_gram_size = number[1]
                 self.smoothing_value = number[2]
@@ -52,7 +50,7 @@ class InputParser:
     
     def get_vocabulary(self):
         return self.vocabulary
-    
+
     def get_n_gram_size(self):
         return self.n_gram_size
 
@@ -88,3 +86,4 @@ class InputParser:
 
     def get_tweet_testing_messages(self):
         return self.tweet_testing_messages
+
