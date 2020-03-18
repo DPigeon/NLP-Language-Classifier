@@ -1,4 +1,5 @@
 import input_parser
+import vocabulary
 
 # The main file
 inputPath = "input/input.txt"
@@ -20,5 +21,7 @@ def main():
     tweet_usernames = the_input.get_tweet_training_usernames()
     tweet_languages = the_input.get_tweet_training_languages()
     tweet_messages = the_input.get_tweet_training_messages()
+
+    vocab = vocabulary.Vocabulary(v, tweet_messages)
 
 main()
