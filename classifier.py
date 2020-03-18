@@ -31,5 +31,6 @@ def main():
     # Vocabulary
     vocab = vocabulary.Vocabulary(v, tweets)
     vocab.train(v, tweets)
+    vocab.test(v)
 
 main()
