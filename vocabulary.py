@@ -38,11 +38,23 @@ class Vocabulary:
             char_size = len(self.low_letters) + len(self.up_letters)
             letters = (self.low_letters + self.up_letters).copy() # Merge the two
         
+        print("Training the model with vocabulary type V = " + v + " and " + str(len(tweets)) + " tweets...")
         for i in iter(lang): # For all classes i
+            training_table_classes.append(self.class_probability(i, tweets))
             for j in range(char_size): # For all characters in vocabulary j
                 training_table_chars.append(self.cond_probability(i, j, tweets, letters, lang))
 
-    def cond_probability(self, i, j, tweets, letters, lang): # example: computer P('a'|eu) = count('a', eu) / sum(count('a', eu))
+    def class_probability(self, i, tweets): # example: compute P('eu') = count('eu) / count(all docs)
+        count_doc_i = 0
+        count_all_doc = len(tweets)
+        prob_i = 0
+        for t in range(len(self.characters)):
+            if tweets[t].get_language() == i.value:
+                count_doc_i = count_doc_i + 1
+        prob_i = count_doc_i / count_all_doc
+        return prob_i
+
+    def cond_probability(self, i, j, tweets, letters, lang): # example: compute P('a'|eu) = count('a', eu) / sum(count('a', eu))
         count_j_i = 0
         sum_j_i = 0
         prob_j_i = 0
@@ -50,7 +62,7 @@ class Vocabulary:
             if tweets[t].get_language() == i.value: 
                 count_j_i = count_j_i + self.characters[t].count(letters[j]) # Getting the number of characters in each languages class
                 sum_j_i = sum_j_i + len(self.characters[t]) # Getting the sum of all characters in each language class
-                prob_j_i = count_j_i / sum_j_i
+        prob_j_i = count_j_i / sum_j_i
         return prob_j_i
                        
     def get_characters(self):
