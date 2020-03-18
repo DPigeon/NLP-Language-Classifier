@@ -1,6 +1,6 @@
 import input_parser
 import vocabulary
-import Tweet
+import tweet
 
 # The main file
 inputPath = "input/input.txt"
@@ -26,7 +26,7 @@ def main():
     # Creating the tweets
     tweets = []
     for i in range(len(tweet_ids)):
-        tweets.append(Tweet.Tweet(tweet_ids[i], tweet_usernames[i], tweet_languages[i], tweet_messages[i]))
+        tweets.append(tweet.Tweet(tweet_ids[i], tweet_usernames[i], tweet_languages[i], tweet_messages[i]))
 
     # Vocabulary
     vocab = vocabulary.Vocabulary(v, tweets)

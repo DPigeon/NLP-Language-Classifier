@@ -18,7 +18,7 @@ class Vocabulary:
                     elif v == '2':
                         if letter.islower() or letter.isupper() or letter.isalpha():
                             self.characters[i].append(letter)
-
+                            
     def get_characters(self):
         return self.characters
 
