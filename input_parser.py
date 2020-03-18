@@ -1,9 +1,9 @@
 class InputParser:
-    vocabulary = 0 # Vocabulary to use (0, 1 or 2)
-    n_gram_size = 0 # Size of n-grams (1, 2 or 3)
-    smoothing_value = 0 # Smoothing value between 0 and 1
-    training_file = "" # File used for training
-    testing_file = "" # File used for testing
+    vocabulary = 0  # Vocabulary to use (0, 1 or 2)
+    n_gram_size = 0  # Size of n-grams (1, 2 or 3)
+    smoothing_value = 0  # Smoothing value between 0 and 1
+    training_file = ""  # File used for training
+    testing_file = ""  # File used for testing
 
     # Tweets for training (id, username, language, post)
     tweet_training_ids = []
@@ -27,13 +27,13 @@ class InputParser:
                 self.smoothing_value = number[2]
                 self.training_file = number[3]
                 self.testing_file = number[4]
-    
-    def read_set_file(self, mode): # Two read modes: Mode 1: training, Mode 2: test
+
+    def read_set_file(self, mode):  # Two read modes: Mode 1: training, Mode 2: test
         if mode == "training":
             read_file = "input/" + self.training_file + ".txt"
             with open(read_file, encoding="utf8") as file:
                 for line in file:
-                    tweet = line.split("\t") # Each line is a tweet
+                    tweet = line.split("\t")  # Each line is a tweet
                     self.tweet_training_ids.append(tweet[0])
                     self.tweet_training_usernames.append(tweet[1])
                     self.tweet_training_languages.append(tweet[2])
@@ -47,7 +47,7 @@ class InputParser:
                     self.tweet_testing_usernames.append(tweet[1])
                     self.tweet_testing_languages.append(tweet[2])
                     self.tweet_testing_messages.append(tweet[3])
-    
+
     def get_vocabulary(self):
         return self.vocabulary
 
@@ -62,7 +62,7 @@ class InputParser:
 
     def get_testing_file(self):
         return self.testing_file
-        
+
     def get_tweet_training_ids(self):
         return self.tweet_training_ids
 
@@ -74,7 +74,7 @@ class InputParser:
 
     def get_tweet_training_messages(self):
         return self.tweet_training_messages
-    
+
     def get_tweet_testing_ids(self):
         return self.tweet_testing_ids
 
@@ -86,4 +86,3 @@ class InputParser:
 
     def get_tweet_testing_messages(self):
         return self.tweet_testing_messages
-
