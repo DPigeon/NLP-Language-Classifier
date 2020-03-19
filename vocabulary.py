@@ -39,7 +39,7 @@ class Vocabulary:
         prob_i = count_doc_i / count_all_doc
         return prob_i
 
-    def cond_probability(self, i, j, tweets, letters, lang): # example: compute P('a'|eu) = count('a', eu) / sum(count('a', eu))
+    def cond_probability(self, i, j, tweets, letters, lang, d): # example: compute P('a'|eu) = count('a', eu) / sum(count('a', eu))
         count_j_i = 0
         sum_j_i = 0
         prob_j_i = 0
@@ -47,7 +47,7 @@ class Vocabulary:
             if tweets[t].get_language() == i.value: 
                 count_j_i = count_j_i + self.characters[t].count(letters[j]) # Getting the number of characters in each languages class
                 sum_j_i = sum_j_i + len(self.characters[t]) # Getting the sum of all characters in each language class
-        prob_j_i = count_j_i / sum_j_i
+        prob_j_i = (count_j_i + float(d)) / (sum_j_i + float(d) * len(letters)) # with smoothing d
         return prob_j_i
     
     def determite_vocabulary(self, v):
@@ -66,7 +66,7 @@ class Vocabulary:
         info['letters'] = letters
         return info
 
-    def train(self, v, tweets):
+    def train(self, v, d, tweets):
         lang = language.Language
         info = self.determite_vocabulary(v)
         char_size = info.get("char_size")
@@ -76,7 +76,7 @@ class Vocabulary:
         for i in iter(lang): # For all classes i
             self.training_table_classes.append(self.class_probability(i, tweets))
             for j in range(char_size): # For all characters in vocabulary j
-                self.training_table_chars.append(self.cond_probability(i, j, tweets, letters, lang))
+                self.training_table_chars.append(self.cond_probability(i, j, tweets, letters, lang, d))
 
     def test(self, v):
         info = self.determite_vocabulary(v)
@@ -91,8 +91,16 @@ class Vocabulary:
             for j in range(char_size):
                 score = score + math.log10(self.training_table_chars[j])
             self.scores.append(score)
+        self.printScores()
+        
+    def printScores(self):
+        languages = ['Basque', 'Catalan', 'Galican', 'Spanish', 'English', 'Portuguese'] # for better printing
         index = np.argmax(self.scores) # Gets the index of the maximum score
-        print(self.scores)
+        print('The scores are...\n')
+
+        for i in range(len(language.Language)):
+            print(languages[i] + ': ' + str(self.scores[i]) + "\n")
+        print('The best language is ' + languages[index] + ' with score ' + str(self.scores[index]) + '.')
                        
     def get_characters(self):
         return self.characters
