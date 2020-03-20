@@ -81,7 +81,7 @@ class Ngram:
 
         message = tweet.get_message().translate(str.maketrans('', '', string.punctuation))  # Removes all punctuation
         message = message.split()
-        message = [x for x in message if self.vocabulary]  # Ignore character not in vocabulary
+        message = [x.lower() for x in message if x.lower() in self.vocabulary]  # Ignore character not in vocabulary
 
         for word_count in range(len(message) - self.n + 1):  # Getting one word at a time
             token = message[word_count:word_count + self.n]
