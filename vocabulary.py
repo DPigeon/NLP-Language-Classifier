@@ -95,19 +95,19 @@ class Vocabulary:
         score = 0
 
         print("Testing the model...")
-
         languages = ['eu', 'ca', 'gl', 'es', 'en', 'pt']
-        for i in range(len(tweets)):
+        for i in range(len(self.characters_testing)):
+            sentence = ''.join(self.characters_testing[i]) # Putting back into strings
             for j in range(len(languages)):
                 if tweets[i].get_language() == languages[j]:
                     score = math.log10(self.training_table_classes[j])
                 for k in range(char_size):
-                    if letters[k] == self.characters_testing[i]:
-                        score = score + math.log10(self.training_table_chars[j][k])
+                    if letters[k] in sentence:
+                        score = score + math.log10(self.training_table_chars[k])
                 self.scores.append(score)
-            self.printScores(i)
+        #self.printScores()
 
-    def printScores(self, i):
+    def printScores(self):
         languages = ['Basque', 'Catalan', 'Galican', 'Spanish', 'English', 'Portuguese']  # for better printing
         index = np.argmax(self.scores)  # Gets the index of the maximum score
         print('The scores for tweet #' + str(i) + ' are...')
