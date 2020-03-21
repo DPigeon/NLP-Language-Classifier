@@ -105,15 +105,20 @@ class Vocabulary:
                     if letters[k] in sentence:
                         score = score + math.log10(self.training_table_chars[k])
                 self.scores.append(score)
-        #self.printScores()
+        self.printScores()
 
     def printScores(self):
         languages = ['Basque', 'Catalan', 'Galican', 'Spanish', 'English', 'Portuguese']  # for better printing
-        index = np.argmax(self.scores)  # Gets the index of the maximum score
-        print('The scores for tweet #' + str(i) + ' are...')
+        topIndex = 0
 
-        for i in range(len(language.Language)):
-            print(languages[i] + ': ' + str(self.scores[i]) + ", ")
+        newArray = np.reshape(self.scores, (len(self.characters_testing), len(languages)))
+        for i in range(len(self.characters_testing)):
+            print("\n")
+            print('The scores for tweet #' + str(i + 1) + ' are...')
+            for j in range(len(languages)):
+                topIndex = np.argmax(newArray[i])
+                print(languages[j] + ': ' + str(newArray[i][j]) + ", ")
+            print("The most likely language for this tweet is " + languages[topIndex] + " with score: " + str(newArray[i][topIndex]) + ".")
 
     def get_characters(self):
         return self.characters
