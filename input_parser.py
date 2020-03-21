@@ -31,22 +31,24 @@ class InputParser:
     def read_set_file(self, mode):  # Two read modes: Mode 1: training, Mode 2: test
         if mode == "training":
             read_file = "input/" + self.training_file + ".txt"
-            with open(read_file, encoding="utf8") as file:
+            with open(read_file, mode='r', encoding='utf-8-sig') as file:
                 for line in file:
-                    tweet = line.split("\t")  # Each line is a tweet
-                    self.tweet_training_ids.append(tweet[0])
-                    self.tweet_training_usernames.append(tweet[1])
-                    self.tweet_training_languages.append(tweet[2])
-                    self.tweet_training_messages.append(tweet[3])
+                    if line.strip():
+                        tweet = line.split("\t")  # Each line is a tweet
+                        self.tweet_training_ids.append(tweet[0])
+                        self.tweet_training_usernames.append(tweet[1])
+                        self.tweet_training_languages.append(tweet[2])
+                        self.tweet_training_messages.append(tweet[3])
         else:
             read_file = "input/" + self.testing_file + ".txt"
-            with open(read_file, encoding="utf8") as file:
+            with open(read_file, mode='r', encoding='utf-8-sig') as file:
                 for line in file:
-                    tweet = line.split("\t")
-                    self.tweet_testing_ids.append(tweet[0])
-                    self.tweet_testing_usernames.append(tweet[1])
-                    self.tweet_testing_languages.append(tweet[2])
-                    self.tweet_testing_messages.append(tweet[3])
+                    if line.strip():
+                        tweet = line.split("\t")
+                        self.tweet_testing_ids.append(tweet[0])
+                        self.tweet_testing_usernames.append(tweet[1])
+                        self.tweet_testing_languages.append(tweet[2])
+                        self.tweet_testing_messages.append(tweet[3])
 
     def get_vocabulary(self):
         return self.vocabulary
