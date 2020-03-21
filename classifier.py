@@ -1,5 +1,6 @@
 import input_parser
 import vocabulary
+import n_gram
 import tweet
 
 # The main file
@@ -32,5 +33,11 @@ def main():
     vocab = vocabulary.Vocabulary(v, tweets)
     vocab.train(v, d, tweets)
     vocab.test(v)
+
+    ngram = n_gram.Ngram(n, tweets, d)
+    tweet1 = tweet.Tweet(0, 0, 'en', 'hello i\'m a dude and I want to know if it\'s ok yeeeeee')
+    tweet2 = tweet.Tweet(0, 0, 'es', 'buenos dias, donde estas el cuarto de bano')
+    ngram.test(tweet1)
+    ngram.test(tweet2)
 
 main()
