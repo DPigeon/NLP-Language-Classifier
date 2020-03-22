@@ -19,22 +19,35 @@ def main():
     # Reading the training set
     the_input.read_set_file("training")
 
-    tweet_ids = the_input.get_tweet_training_ids()
-    tweet_usernames = the_input.get_tweet_training_usernames()
-    tweet_languages = the_input.get_tweet_training_languages()
-    tweet_messages = the_input.get_tweet_training_messages()
+    tweet_training_ids = the_input.get_tweet_training_ids()
+    tweet_training_usernames = the_input.get_tweet_training_usernames()
+    tweet_training_languages = the_input.get_tweet_training_languages()
+    tweet_training_messages = the_input.get_tweet_training_messages()
 
-    # Creating the tweets
-    tweets = []
-    for i in range(len(tweet_ids)):
-        tweets.append(tweet.Tweet(tweet_ids[i], tweet_usernames[i], tweet_languages[i], tweet_messages[i]))
+    # Reading the testing set
+    the_input.read_set_file("testing")
+
+    tweet_testing_ids = the_input.get_tweet_testing_ids()
+    tweet_testing_usernames = the_input.get_tweet_testing_usernames()
+    tweet_testing_languages = the_input.get_tweet_testing_languages()
+    tweet_testing_messages = the_input.get_tweet_testing_messages()
+
+    # Creating the tweets with the training set
+    training_tweets = []
+    for i in range(len(tweet_training_ids)):
+        training_tweets.append(tweet.Tweet(tweet_training_ids[i], tweet_training_usernames[i], tweet_training_languages[i], tweet_training_messages[i]))
+    
+    # Creating the tweets with the testing set
+    testing_tweets = []
+    for i in range(len(tweet_testing_ids)):
+        testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i], tweet_testing_messages[i]))
 
     # Vocabulary
-    vocab = vocabulary.Vocabulary(v, tweets)
-    vocab.train(v, d, tweets)
-    vocab.test(v)
+    vocab = vocabulary.Vocabulary(v, training_tweets)
+    vocab.train(v, d, training_tweets)
+    vocab.test(v, testing_tweets)
 
-    ngram = n_gram.Ngram(n, tweets, d)
+    ngram = n_gram.Ngram(n, training_tweets, d)
     tweet1 = tweet.Tweet(0, 0, 'en', 'hello i\'m a dude and I want to know if it\'s ok yeeeeee')
     tweet2 = tweet.Tweet(0, 0, 'es', 'buenos dias, donde estas el cuarto de bano')
     ngram.test(tweet1)

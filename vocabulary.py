@@ -8,7 +8,9 @@ class Vocabulary:
     low_letters = list(string.ascii_lowercase)
     up_letters = list(string.ascii_uppercase)
 
-    characters = []  # List of sentence of characters
+    characters = []  # List of sentence of characters for training
+    characters_testing = [] # List of sentences of characters for testing
+
     training_table_chars = []
     training_table_classes = []
     scores = []
@@ -17,18 +19,21 @@ class Vocabulary:
     # 1: Distinguish up and low cases and use only the 26 letters of the alphabet [a-z, A-Z]
     # 2: Distinguish up and low cases and use all characters accepted by the built-in isalpha() method
     def __init__(self, v, tweets):  # Initialize by getting all characters
+        self.construct_corpus(v, tweets, self.characters) # Training
+    
+    def construct_corpus(self, v, tweets, chars): # chars can be used for the training of testing
         for i in range(len(tweets)):
-            self.characters.append([])
+            chars.append([])
             for letter in tweets[i].get_message():
                 if v == '0':
                     if letter.islower():
-                        self.characters[i].append(letter)
+                        chars[i].append(letter)
                 elif v == '1':
                     if letter.islower() or letter.isupper():
-                        self.characters[i].append(letter)
+                        chars[i].append(letter)
                 elif v == '2':
                     if letter.islower() or letter.isupper() or letter.isalpha():
-                        self.characters[i].append(letter)
+                        chars[i].append(letter)
 
     def class_probability(self, i, tweets):  # example: compute P('eu') = count('eu) / count(all docs)
         count_doc_i = 0
@@ -81,29 +86,39 @@ class Vocabulary:
             for j in range(char_size):  # For all characters in vocabulary j
                 self.training_table_chars.append(self.cond_probability(i, j, tweets, letters, lang, d))
 
-    def test(self, v):
+    def test(self, v, tweets):
+        self.construct_corpus(v, tweets, self.characters_testing)
         info = self.determite_vocabulary(v)
         lang = language.Language
         char_size = info.get("char_size")
+        letters = info.get("letters")
         score = 0
-        maxScore = 0  # We get it with argmax in the end
 
         print("Testing the model...")
-        for i in range(len(lang)):  # For all classes i
-            score = math.log10(self.training_table_classes[i])
-            for j in range(char_size):
-                score = score + math.log10(self.training_table_chars[j])
-            self.scores.append(score)
+        languages = ['eu', 'ca', 'gl', 'es', 'en', 'pt']
+        for i in range(len(self.characters_testing)):
+            sentence = ''.join(self.characters_testing[i]) # Putting back into strings
+            for j in range(len(languages)):
+                if tweets[i].get_language() == languages[j]:
+                    score = math.log10(self.training_table_classes[j])
+                for k in range(char_size):
+                    if letters[k] in sentence:
+                        score = score + math.log10(self.training_table_chars[k])
+                self.scores.append(score)
         self.printScores()
 
     def printScores(self):
         languages = ['Basque', 'Catalan', 'Galican', 'Spanish', 'English', 'Portuguese']  # for better printing
-        index = np.argmax(self.scores)  # Gets the index of the maximum score
-        print('The scores are...\n')
+        topIndex = 0
 
-        for i in range(len(language.Language)):
-            print(languages[i] + ': ' + str(self.scores[i]) + "\n")
-        print('The best language is ' + languages[index] + ' with score ' + str(self.scores[index]) + '.')
+        newArray = np.reshape(self.scores, (len(self.characters_testing), len(languages)))
+        for i in range(len(self.characters_testing)):
+            print("\n")
+            print('The scores for tweet #' + str(i + 1) + ' are...')
+            for j in range(len(languages)):
+                topIndex = np.argmax(newArray[i])
+                print(languages[j] + ': ' + str(newArray[i][j]) + ", ")
+            print("The most likely language for this tweet is " + languages[topIndex] + " with score: " + str(newArray[i][topIndex]) + ".")
 
     def get_characters(self):
         return self.characters
