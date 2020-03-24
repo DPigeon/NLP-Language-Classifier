@@ -1,9 +1,9 @@
 import input_parser
+import output_parser
 import vocabulary
 import n_gram
 import tweet
 import language
-from collections import Counter
 
 # The main file
 inputPath = "input/input.txt"
@@ -20,12 +20,16 @@ def merge_two_dicts(x, y):
 def main():
     the_input = input_parser.InputParser(inputPath)
 
-    # Getting hyper=parameters
+    # Getting hyper-parameters
     v = the_input.get_vocabulary()
     n = the_input.get_n_gram_size()
     d = the_input.get_smoothing_value()
     training_file = the_input.get_training_file()
     testing_file = the_input.get_testing_file()
+
+    # Creating the trace file
+    output = output_parser.OutputParser()
+    output.init_trace_file("normal", v, n, d) # For our first model with hyper-parameters
 
     # Reading the training set
     the_input.read_set_file("training")
@@ -60,19 +64,35 @@ def main():
     vocab = vocabulary.Vocabulary(v, training_tweets)
     vocab.train(v, d, training_tweets)
     vocab.test(v, testing_tweets)
+    vocab_scores = vocab.init_dict(vocab.get_scores())
+
+    # Ngram
     ngram = n_gram.Ngram(n, testing_tweets, d)
     ngram.test_all(testing_tweets)
-
     ngram_scores = ngram.get_scores()
-    vocab_scores = vocab.init_dict(vocab.get_scores())
 
     # Summing the two models
     merged_score_array = []
     for i in range(len(ngram_scores)):
         merged_scores = merge_two_dicts(ngram_scores[i], vocab_scores[i])
-        merged_score_array.append(merged_scores)
+        merged_score_array.append(merged_scores)  
 
-    print(len(merged_score_array))
+    # Writing trace file
+    print("Writing the trace file...")
+    for i in range(len(testing_tweets)):
+        dict_scores = merged_score_array[i]
+        likelyClass = max(dict_scores, key=dict_scores.get).value
+        maxScore = max(dict_scores.values())
+        correctClass = testing_tweets[i].get_language()
+        label = ""
+
+        if likelyClass == correctClass:
+            label = "correct"
+        else:
+            label = "wrong"
+
+        output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+    print("Completed the classification!")
 
 
 main()

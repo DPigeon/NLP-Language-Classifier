@@ -1,1 +1,1 @@
-0 1 0.5 training_set testing_set
+2 3 0.9 training_set testing_set
