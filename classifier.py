@@ -2,9 +2,20 @@ import input_parser
 import vocabulary
 import n_gram
 import tweet
+import language
+from collections import Counter
 
 # The main file
 inputPath = "input/input.txt"
+
+
+def merge_two_dicts(x, y):
+    """Given two dicts, merge them into a new dict."""
+    z = language.to_dict(0)
+    for f, b in zip(x.items(), y.items()):
+        z[f[0]] = f[1] + b[1]
+    return z
+
 
 def main():
     the_input = input_parser.InputParser(inputPath)
@@ -35,22 +46,33 @@ def main():
     # Creating the tweets with the training set
     training_tweets = []
     for i in range(len(tweet_training_ids)):
-        training_tweets.append(tweet.Tweet(tweet_training_ids[i], tweet_training_usernames[i], tweet_training_languages[i], tweet_training_messages[i]))
-    
+        training_tweets.append(
+            tweet.Tweet(tweet_training_ids[i], tweet_training_usernames[i], tweet_training_languages[i],
+                        tweet_training_messages[i]))
+
     # Creating the tweets with the testing set
     testing_tweets = []
     for i in range(len(tweet_testing_ids)):
-        testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i], tweet_testing_messages[i]))
+        testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
+                                          tweet_testing_messages[i]))
 
     # Vocabulary
     vocab = vocabulary.Vocabulary(v, training_tweets)
     vocab.train(v, d, training_tweets)
     vocab.test(v, testing_tweets)
+    ngram = n_gram.Ngram(n, testing_tweets, d)
+    ngram.test_all(testing_tweets)
 
-    ngram = n_gram.Ngram(n, training_tweets, d)
-    tweet1 = tweet.Tweet(0, 0, 'en', 'hello i\'m a dude and I want to know if it\'s ok yeeeeee')
-    tweet2 = tweet.Tweet(0, 0, 'es', 'buenos dias, donde estas el cuarto de bano')
-    ngram.test(tweet1)
-    ngram.test(tweet2)
+    ngram_scores = ngram.get_scores()
+    vocab_scores = vocab.init_dict(vocab.get_scores())
+
+    # Summing the two models
+    merged_score_array = []
+    for i in range(len(ngram_scores)):
+        merged_scores = merge_two_dicts(ngram_scores[i], vocab_scores[i])
+        merged_score_array.append(merged_scores)
+
+    print(len(merged_score_array))
+
 
 main()

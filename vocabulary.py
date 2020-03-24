@@ -9,7 +9,7 @@ class Vocabulary:
     up_letters = list(string.ascii_uppercase)
 
     characters = []  # List of sentence of characters for training
-    characters_testing = [] # List of sentences of characters for testing
+    characters_testing = []  # List of sentences of characters for testing
 
     training_table_chars = []
     training_table_classes = []
@@ -19,9 +19,9 @@ class Vocabulary:
     # 1: Distinguish up and low cases and use only the 26 letters of the alphabet [a-z, A-Z]
     # 2: Distinguish up and low cases and use all characters accepted by the built-in isalpha() method
     def __init__(self, v, tweets):  # Initialize by getting all characters
-        self.construct_corpus(v, tweets, self.characters) # Training
-    
-    def construct_corpus(self, v, tweets, chars): # chars can be used for the training of testing
+        self.construct_corpus(v, tweets, self.characters)  # Training
+
+    def construct_corpus(self, v, tweets, chars):  # chars can be used for the training of testing
         for i in range(len(tweets)):
             chars.append([])
             for letter in tweets[i].get_message():
@@ -97,7 +97,7 @@ class Vocabulary:
         print("Testing the model...")
         languages = ['eu', 'ca', 'gl', 'es', 'en', 'pt']
         for i in range(len(self.characters_testing)):
-            sentence = ''.join(self.characters_testing[i]) # Putting back into strings
+            sentence = ''.join(self.characters_testing[i])  # Putting back into strings
             for j in range(len(languages)):
                 if tweets[i].get_language() == languages[j]:
                     score = math.log10(self.training_table_classes[j])
@@ -105,7 +105,6 @@ class Vocabulary:
                     if letters[k] in sentence:
                         score = score + math.log10(self.training_table_chars[k])
                 self.scores.append(score)
-        self.printScores()
 
     def printScores(self):
         languages = ['Basque', 'Catalan', 'Galican', 'Spanish', 'English', 'Portuguese']  # for better printing
@@ -118,10 +117,25 @@ class Vocabulary:
             for j in range(len(languages)):
                 topIndex = np.argmax(newArray[i])
                 print(languages[j] + ': ' + str(newArray[i][j]) + ", ")
-            print("The most likely language for this tweet is " + languages[topIndex] + " with score: " + str(newArray[i][topIndex]) + ".")
+            print("The most likely language for this tweet is " + languages[topIndex] + " with score: " + str(
+                newArray[i][topIndex]) + ".")
 
     def get_characters(self):
         return self.characters
 
     def get_score(self):
         return self.score
+
+    def get_scores(self):
+        return self.scores
+
+    def init_dict(self, score_tweets):
+        score_array = []
+        for i in range(0, len(score_tweets), 6):
+            score_dict = language.to_dict(0)
+            for l in score_dict:
+                score_dict[l] = score_tweets[i]
+                i += 1
+            score_array.append(score_dict)
+
+        return score_array
