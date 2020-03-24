@@ -66,11 +66,13 @@ class Ngram:
         else:
             score_token = language.to_dict(self.smoothing)
 
-        if sum(current_score_dict.values()) == 0:
-            score_to_add = {k: math.log10(score_token[k]) for k in current_score_dict}  # If first time initialize
-        else:
-            score_to_add = {k: math.log10(score_token[k]) + (current_score_dict[k]) for k in
-                            current_score_dict}  # Add two dict together by their log value
+        score_to_add = {}
+        # Adding the dicts together by key
+        for k in current_score_dict:
+            if score_token[k] != 0:
+                score_to_add[k] = math.log10(score_token[k]) + current_score_dict[k]
+            else:
+                score_to_add[k] = score_token[k] + current_score_dict[k]
 
         return score_to_add
 
