@@ -9,7 +9,7 @@ class Ngram:
     def __init__(self, n, tweets, smoothing):
         self.smoothing = float(smoothing)
         self.n = int(n)
-
+        self.scores = []
         self.vocabulary = self.build_gram_model(1, tweets)
         print("Training the data by calculating the frequencies of each words")
 
@@ -74,6 +74,11 @@ class Ngram:
 
         return score_to_add
 
+    def test_all(self, tweets):
+        for element in tweets:
+            self.scores.append(self.test(element))
+        return self.scores
+
     # Method that takes in a tweet and outputs a score, from the score you can calculate which language is most
     # probable.
     def test(self, tweet):
@@ -88,9 +93,11 @@ class Ngram:
             token = " ".join(token)
             score = self.calculate_score(score, token)
 
-        self.determine_language_result(score)
         return score
 
     def determine_language_result(self, score_dict):
         print(score_dict)
         return max(score_dict, key=lambda key: score_dict[key])  # Returns the highest key value
+
+    def get_scores(self):
+        return self.scores
