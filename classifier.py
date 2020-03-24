@@ -75,16 +75,24 @@ def main():
     merged_score_array = []
     for i in range(len(ngram_scores)):
         merged_scores = merge_two_dicts(ngram_scores[i], vocab_scores[i])
-        merged_score_array.append(merged_scores)
+        merged_score_array.append(merged_scores)  
 
     # Writing trace file
     print("Writing the trace file...")
     for i in range(len(testing_tweets)):
-        likelyClass = "test"
-        score = 0
-        label = "test"
+        dict_scores = merged_score_array[i]
+        likelyClass = max(dict_scores, key=dict_scores.get).value
+        maxScore = max(dict_scores.values())
+        correctClass = testing_tweets[i].get_language()
+        label = ""
 
-        output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, score, testing_tweets[i].get_language(), label)
+        if likelyClass == correctClass:
+            label = "correct"
+        else:
+            label = "wrong"
+
+        output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+    print("Completed the classification!")
 
 
 main()
