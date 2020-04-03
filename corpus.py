@@ -5,9 +5,11 @@ class Corpus:
     up_letters = list(string.ascii_uppercase)
     alpha_letters = dict()
     v = ''
+    characters = []  # List of sentence of characters for training
 
     def __init__(self, v, tweets):
         self.v = v
+        self.get_isalpha()
         self.construct_corpus(tweets, self.characters)  # Training
 
     def construct_corpus(self, tweets, chars):  # chars can be used for the training of testing
@@ -35,10 +37,20 @@ class Corpus:
             char_size = len(self.low_letters) + len(self.up_letters)
             letters = (self.low_letters + self.up_letters).copy()  # Merge the two
         elif self.v == '2':
-            char_size = len(self.low_letters + len(self.up_letters) + len(self.alpha_letters))
-            letters = (self.low_letters + self.up_letters + self.alpha_letters).copy() # Merge the three
+            list_isalpha = self.alpha_letters.values()
+            char_size = len(list_isalpha)
+            letters = (list(list_isalpha)).copy() # Merge the three
 
         info = dict()
         info['char_size'] = char_size
         info['letters'] = letters
         return info
+
+    def get_isalpha(self):
+        count = 0
+        # unicode = 17 planes of 2**16 symbols
+        for codepoint in range(17 * 2**16):
+            ch = chr(codepoint)
+            if ch.isalpha():
+                self.alpha_letters[str(count)] = ch
+                count = count + 1
