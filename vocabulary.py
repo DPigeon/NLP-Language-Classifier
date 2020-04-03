@@ -7,6 +7,7 @@ import string
 class Vocabulary:
     low_letters = list(string.ascii_lowercase)
     up_letters = list(string.ascii_uppercase)
+    alpha_letter = dict()
 
     characters = []  # List of sentence of characters for training
     characters_testing = []  # List of sentences of characters for testing

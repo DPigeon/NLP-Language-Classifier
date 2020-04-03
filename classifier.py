@@ -67,7 +67,7 @@ def main():
     vocab_scores = vocab.init_dict(vocab.get_scores())
 
     # Ngram
-    ngram = n_gram.Ngram(n, testing_tweets, d)
+    ngram = n_gram.Ngram(n, training_tweets, d, v)
     ngram.test_all(testing_tweets)
     ngram_scores = ngram.get_scores()
 
@@ -80,7 +80,7 @@ def main():
         # Writing trace file
     print("Writing the trace file...")
     for i in range(len(testing_tweets)):
-        dict_scores = merged_score_array[i]
+        dict_scores = ngram_scores[i]
         likelyClass = max(dict_scores, key=dict_scores.get).value
         maxScore = max(dict_scores.values())
         correctClass = testing_tweets[i].get_language()

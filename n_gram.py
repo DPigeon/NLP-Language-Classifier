@@ -1,17 +1,17 @@
 import math
 import string
 import language
-import tweet
+import copy
 
 
 class Ngram:
 
-    def __init__(self, n, tweets, smoothing):
+    def __init__(self, n, tweets, smoothing, v):
         self.smoothing = float(smoothing)
         self.n = int(n)
         self.scores = []
-        self.vocabulary = self.build_gram_model(1, tweets)
-        print("Training the data by calculating the frequencies of each words")
+        self.v = v
+        print("Training the data by calculating the frequencies of each characters")
 
         if self.n == 1:
             print("Building unigram model...")
@@ -32,11 +32,11 @@ class Ngram:
         for tweet in tweets:
             message = tweet.get_message().translate(
                 str.maketrans('', '', string.punctuation))  # Removes all punctuation
-            message = message.split()
+            message = [x for x in list(message) if self.check_in_vocab(x)]
 
-            for word_count in range(len(message) - gram + 1):  # Getting one word at a time
-                token = message[word_count:word_count + gram]
-                token = " ".join(token).lower()  # Lower casing everything
+            for character_count in range(len(message) - gram + 1):  # Getting one character at a time
+                token = message[character_count:character_count + gram]
+                token = "".join(token)  # Lower casing everything
                 if token in gram_frequency.keys():
                     gram_frequency[token][language.Language(tweet.get_language())] = gram_frequency.get(
                         token).get(language.Language(tweet.get_language())) + 1
@@ -50,12 +50,13 @@ class Ngram:
     """ Method that trains models based on the n provided to the gram """
 
     def build_gram_model(self, n, tweets):
-        gram_model = self.build_gram_frequency(tweets, n)
+        gram_model_fetched = self.build_gram_frequency(tweets, n)
 
-        # Given a word, what's the probability that this word is
-        for entry in gram_model:
+        # Given a character, what's the probability that this character is of a language
+        gram_model = copy.deepcopy(gram_model_fetched)
+        for entry in gram_model_fetched:
             for l in iter(language.Language):
-                gram_model[entry][l] = (gram_model[entry][l] / sum(gram_model[entry].values()))
+                gram_model[entry][l] = (gram_model_fetched[entry][l] / sum(gram_model_fetched[entry].values()))
 
         return gram_model
 
@@ -87,12 +88,11 @@ class Ngram:
         score = language.to_dict(0)  # initialize the score table
 
         message = tweet.get_message().translate(str.maketrans('', '', string.punctuation))  # Removes all punctuation
-        message = message.split()
-        message = [x.lower() for x in message if x.lower() in self.vocabulary]  # Ignore character not in vocabulary
+        message = [x for x in list(message) if self.check_in_vocab(x)]  # Ignore character not in vocabulary
 
-        for word_count in range(len(message) - self.n + 1):  # Getting one word at a time
-            token = message[word_count:word_count + self.n]
-            token = " ".join(token)
+        for character_count in range(len(message) - self.n + 1):  # Getting one character_count at a time
+            token = message[character_count:character_count + self.n]
+            token = "".join(token)
             score = self.calculate_score(score, token)
 
         return score
@@ -103,3 +103,15 @@ class Ngram:
 
     def get_scores(self):
         return self.scores
+
+    def check_in_vocab(self, letter):
+        if self.v == '0' and letter.islower():
+            return True
+
+        if self.v == '1' and (letter.islower() or letter.isupper()):
+            return True
+
+        if self.v == '2' and (letter.islower() or letter.isupper() or letter.isalpha()):
+            return True
+
+        return False
