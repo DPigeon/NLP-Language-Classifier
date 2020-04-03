@@ -61,8 +61,10 @@ def main():
         testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
                                           tweet_testing_messages[i]))
 
-    corpus_info = corpus.Corpus('2', training_tweets)
-    print(corpus_info.determite_vocabulary()['char_size'])
+    corpus_info = corpus.Corpus(v, training_tweets)
+    # to get all letters in corpus --> corpus_info.determite_vocabulary()['letters']
+    # to get the size of corpus --> corpus_info.determite_vocabulary()['char_size']
+    print(corpus_info.determite_vocabulary()['letters'])
 
     # Vocabulary
     #vocab = vocabulary.Vocabulary(v, training_tweets)
@@ -84,18 +86,18 @@ def main():
         # Writing trace file
     #print("Writing the trace file...")
     #for i in range(len(testing_tweets)):
-        #dict_scores = ngram_scores[i]
-        #likelyClass = max(dict_scores, key=dict_scores.get).value
-        #maxScore = max(dict_scores.values())
-        #correctClass = testing_tweets[i].get_language()
-        #label = ""
+    #   dict_scores = ngram_scores[i]
+    #   likelyClass = max(dict_scores, key=dict_scores.get).value
+    #   maxScore = max(dict_scores.values())
+    #   correctClass = testing_tweets[i].get_language()
+    #   label = ""
 
-        #if likelyClass == correctClass:
-            #label = "correct"
-        #else:
-            #label = "wrong"
+    #   if likelyClass == correctClass:
+    #       label = "correct"
+    #   else:
+    #       label = "wrong"
 
-        #output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+    #   output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
     #output.create_evaluation_file("normal", v, n, d)
     #print("Writing the evaluation file...")
 
