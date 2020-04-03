@@ -4,13 +4,23 @@ import language
 import copy
 
 
+def generate_isalpha():
+    isalpha_list = list()
+    for codepoint in range(17 * 2 ** 16):
+        ch = chr(codepoint)
+        if ch.isalpha():
+            isalpha_list.append(ch)
+    return isalpha_list
+
+
 class Ngram:
 
     def __init__(self, n, tweets, smoothing, v):
         self.smoothing = float(smoothing)
         self.n = int(n)
         self.scores = []
-        self.v = v
+        self.v = int(v)
+        self.chosen_alphabet = {}
         print("Training the data by calculating the frequencies of each characters")
 
         if self.n == 1:
@@ -25,14 +35,48 @@ class Ngram:
         else:
             print("Can't build", n, "gram -> only supports uni (1), bi (2), tri (3) grams")
 
+    # function optimized to run on gpu
+    # @jit
+    def generate_vocab(self, gram, v):
+
+        chosen_alphabet = list()
+        if v == 0:
+            chosen_alphabet = list(string.ascii_lowercase)
+        elif v == 1:
+            chosen_alphabet = list(string.ascii_letters)
+        elif v == 2:
+            chosen_alphabet = generate_isalpha()
+        self.chosen_alphabet = dict.fromkeys(chosen_alphabet)
+        vocab = {}
+        if gram == 1:
+            vocab = {k: dict.fromkeys(language.to_dict(self.smoothing), self.smoothing) for k in chosen_alphabet}
+        elif gram == 2:
+            merged_char = []
+            for char in chosen_alphabet:
+                for char2 in chosen_alphabet:
+                    merged_char.append(char + char2)
+
+            vocab = {k: dict.fromkeys(language.to_dict(self.smoothing), self.smoothing) for k in merged_char}
+        elif gram == 3:
+            merged_char = []
+            for char in chosen_alphabet:
+                for char2 in chosen_alphabet:
+                    for char3 in chosen_alphabet:
+                        merged_char.append(char + char2 + char3)
+            vocab = {k: dict.fromkeys(language.to_dict(self.smoothing), self.smoothing) for k in merged_char}
+
+        return vocab
+
+        # Generates the possible vocab
+
     # Build the gram frequency in order to build the model based on the corpus
     def build_gram_frequency(self, tweets, gram):
-        gram_frequency = dict()
+        gram_frequency = self.generate_vocab(gram, self.v)
 
         for tweet in tweets:
             message = tweet.get_message().translate(
                 str.maketrans('', '', string.punctuation))  # Removes all punctuation
-            message = [x for x in list(message) if self.check_in_vocab(x)]
+            message = [x for x in list(message) if x in self.chosen_alphabet]
 
             for character_count in range(len(message) - gram + 1):  # Getting one character at a time
                 token = message[character_count:character_count + gram]
@@ -88,7 +132,7 @@ class Ngram:
         score = language.to_dict(0)  # initialize the score table
 
         message = tweet.get_message().translate(str.maketrans('', '', string.punctuation))  # Removes all punctuation
-        message = [x for x in list(message) if self.check_in_vocab(x)]  # Ignore character not in vocabulary
+        message = [x for x in list(message) if x in self.chosen_alphabet]  # Ignore character not in vocabulary
 
         for character_count in range(len(message) - self.n + 1):  # Getting one character_count at a time
             token = message[character_count:character_count + self.n]
@@ -104,14 +148,3 @@ class Ngram:
     def get_scores(self):
         return self.scores
 
-    def check_in_vocab(self, letter):
-        if self.v == '0' and letter.islower():
-            return True
-
-        if self.v == '1' and (letter.islower() or letter.isupper()):
-            return True
-
-        if self.v == '2' and (letter.islower() or letter.isupper() or letter.isalpha()):
-            return True
-
-        return False
