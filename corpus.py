@@ -9,22 +9,26 @@ class Corpus:
 
     def __init__(self, v, tweets):
         self.v = v
-        self.get_isalpha()
-        self.construct_corpus(tweets, self.characters)  # Training
+        if v == '2':
+            self.get_isalpha()
+        self.construct_corpus(tweets)  # Training
 
-    def construct_corpus(self, tweets, chars):  # chars can be used for the training of testing
+    # 0: Fold the corpus to lowercase and use only the 26 letters of the alphabet [a-z]
+    # 1: Distinguish up and low cases and use only the 26 letters of the alphabet [a-z, A-Z]
+    # 2: Distinguish up and low cases and use all characters accepted by the built-in isalpha() method
+    def construct_corpus(self, tweets):  # chars can be used for the training of testing
         for i in range(len(tweets)):
-            chars.append([])
+            self.characters.append([])
             for letter in tweets[i].get_message():
                 if self.v == '0':
                     if letter.islower():
-                        chars[i].append(letter)
+                        self.characters[i].append(letter)
                 elif self.v == '1':
                     if letter.islower() or letter.isupper():
-                        chars[i].append(letter)
+                        self.characters[i].append(letter)
                 elif self.v == '2':
                     if letter.islower() or letter.isupper() or letter.isalpha():
-                        chars[i].append(letter)
+                        self.characters[i].append(letter)
 
     def determite_vocabulary(self): # Used to get all the information needed in the corpus
         char_size = 0
@@ -54,3 +58,6 @@ class Corpus:
             if ch.isalpha():
                 self.alpha_letters[str(count)] = ch
                 count = count + 1
+
+    def get_characters(self):
+        return self.characters

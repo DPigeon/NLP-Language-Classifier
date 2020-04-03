@@ -1,7 +1,7 @@
 import corpus
 import input_parser
 import output_parser
-import vocabulary
+import naive_bayes
 import n_gram
 import tweet
 import language
@@ -61,16 +61,16 @@ def main():
         testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
                                           tweet_testing_messages[i]))
 
-    corpus_info = corpus.Corpus(v, training_tweets)
-    # to get all letters in corpus --> corpus_info.determite_vocabulary()['letters']
-    # to get the size of corpus --> corpus_info.determite_vocabulary()['char_size']
-    print(corpus_info.determite_vocabulary()['letters'])
+    # Construct the training corpus
+    corpus_training = corpus.Corpus(v, training_tweets)
+    # Vocabulary naive bayes 2nd model & train
+    model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training)
 
-    # Vocabulary
-    #vocab = vocabulary.Vocabulary(v, training_tweets)
-    #vocab.train(v, d, training_tweets)
-    #vocab.test(v, testing_tweets)
-    #vocab_scores = vocab.init_dict(vocab.get_scores())
+    # Construct the testing corpus
+    corpus_testing = corpus.Corpus(v, testing_tweets)
+    # Test the 2nd model
+    model_2.test(v, testing_tweets, corpus_testing)
+    #model_2_scores = model_2.init_dict(model_2.get_scores())
 
     # Ngram
     #ngram = n_gram.Ngram(n, training_tweets, d, v)
