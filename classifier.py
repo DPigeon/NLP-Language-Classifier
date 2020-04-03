@@ -66,16 +66,17 @@ def main():
     # to get the size of corpus --> corpus_info.determite_vocabulary()['char_size']
     print(corpus_info.determite_vocabulary()['letters'])
 
+    # Ngram
+    ngram = n_gram.Ngram(n, training_tweets, d, v)
+    ngram.test_all(testing_tweets)
+    ngram_scores = ngram.get_scores()
+
     # Vocabulary
     #vocab = vocabulary.Vocabulary(v, training_tweets)
     #vocab.train(v, d, training_tweets)
     #vocab.test(v, testing_tweets)
     #vocab_scores = vocab.init_dict(vocab.get_scores())
 
-    # Ngram
-    #ngram = n_gram.Ngram(n, training_tweets, d, v)
-    #ngram.test_all(testing_tweets)
-    #ngram_scores = ngram.get_scores()
 
     # Summing the two models
     #merged_score_array = []
@@ -84,24 +85,24 @@ def main():
     #   merged_score_array.append(merged_scores)
 
         # Writing trace file
-    #print("Writing the trace file...")
-    #for i in range(len(testing_tweets)):
-    #   dict_scores = ngram_scores[i]
-    #   likelyClass = max(dict_scores, key=dict_scores.get).value
-    #   maxScore = max(dict_scores.values())
-    #   correctClass = testing_tweets[i].get_language()
-    #   label = ""
+    print("Writing the trace file...")
+    for i in range(len(testing_tweets)):
+      dict_scores = ngram_scores[i]
+      likelyClass = max(dict_scores, key=dict_scores.get).value
+      maxScore = max(dict_scores.values())
+      correctClass = testing_tweets[i].get_language()
+      label = ""
 
-    #   if likelyClass == correctClass:
-    #       label = "correct"
-    #   else:
-    #       label = "wrong"
+      if likelyClass == correctClass:
+          label = "correct"
+      else:
+          label = "wrong"
 
-    #   output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
-    #output.create_evaluation_file("normal", v, n, d)
-    #print("Writing the evaluation file...")
+      output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+    output.create_evaluation_file("normal", v, n, d)
+    print("Writing the evaluation file...")
 
-    #print("Completed the classification!")
+    print("Completed the classification!")
 
 
 main()
