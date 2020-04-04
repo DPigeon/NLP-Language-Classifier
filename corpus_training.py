@@ -4,6 +4,9 @@ class Corpus:
     low_letters = list(string.ascii_lowercase)
     up_letters = list(string.ascii_uppercase)
     alpha_letters = dict()
+
+    alpha_voc = list()
+
     v = ''
     characters = []  # List of sentence of characters for training
 
@@ -29,7 +32,6 @@ class Corpus:
                 elif self.v == '2':
                     if self.check_isalpha(letter):
                         self.characters[i].append(letter)
-        #print(self.characters)
 
     def determite_vocabulary(self): # Used to get all the information needed in the corpus
         char_size = 0
@@ -42,9 +44,9 @@ class Corpus:
             char_size = len(self.low_letters) + len(self.up_letters)
             letters = (self.low_letters + self.up_letters).copy()  # Merge the two
         elif self.v == '2':
-            list_isalpha = self.alpha_letters.values()
+            list_isalpha = self.alpha_voc
             char_size = len(list_isalpha)
-            letters = (list(list_isalpha)).copy() # Merge the three
+            letters = list_isalpha.copy() # Merge the three
 
         info = dict()
         info['char_size'] = char_size
@@ -60,6 +62,7 @@ class Corpus:
     
     def check_isalpha(self, letter):
         if letter in self.alpha_letters:
+            self.alpha_voc.append(letter)
             return True
         else:
             return False

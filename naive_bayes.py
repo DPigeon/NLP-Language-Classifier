@@ -32,7 +32,7 @@ class NaiveBayes:
                     letters[j])  # Getting the number of characters in each languages class
                 sum_j_i = sum_j_i + len(characters[t])  # Getting the sum of all characters in each language class
         prob_j_i = (count_j_i + float(d)) / (sum_j_i + float(d) * len(letters))  # with smoothing d
-        print(prob_j_i)
+        #print(prob_j_i)
         return prob_j_i
 
     def train(self, v, d, tweets, corpus):
