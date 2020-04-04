@@ -55,7 +55,6 @@ class NaiveBayes:
         char_size = corpus.determite_vocabulary().get("char_size")
         letters = corpus.determite_vocabulary().get("letters")
         characters = corpus.get_characters()
-        print(corpus.get_characters())
         score = 0
 
         print("Testing the model...")
@@ -69,7 +68,7 @@ class NaiveBayes:
                     if letters[k] in sentence:
                         score = score + math.log10(self.training_table_chars[k])
                 self.scores.append(score)
-        print(self.scores)
+        #self.printScores(characters)
 
     def printScores(self, characters):
         languages = ['Basque', 'Catalan', 'Galican', 'Spanish', 'English', 'Portuguese']  # for better printing

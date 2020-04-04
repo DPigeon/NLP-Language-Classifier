@@ -1,4 +1,5 @@
-import corpus
+import corpus_training
+import corpus_testing
 import input_parser
 import output_parser
 import naive_bayes
@@ -60,48 +61,35 @@ def main():
     for i in range(len(tweet_testing_ids)):
         testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
                                           tweet_testing_messages[i]))
+    # MODEL 1
+    # ye
 
-    # Construct the training corpus
-    corpus_training = corpus.Corpus(v, testing_tweets)
-    # Vocabulary naive bayes 2nd model & train
-    model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training)
+    # MODEL 2
+    corpus_training_info = corpus_training.Corpus(v, training_tweets)
+    model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training_info)
+    # Testing
+    corpus_testing_info = corpus_testing.Corpus(v, testing_tweets)
+    model_2.test(v, testing_tweets, corpus_testing_info)
 
-    # Construct the testing corpus
-    corpus_testing = corpus.Corpus(v, testing_tweets)
-    # Test the 2nd model
-    model_2.test(v, testing_tweets, corpus.Corpus(v, testing_tweets))
-    #model_2_scores = model_2.init_dict(model_2.get_scores())
+    # Writing trace file for model 2
+    print("Writing the trace file...")
+    for i in range(len(testing_tweets)):
+       dict_scores = model_2.init_dict(model_2.get_scores())[i]
+       likelyClass = max(dict_scores, key=dict_scores.get).value
+       maxScore = max(dict_scores.values())
+       correctClass = testing_tweets[i].get_language()
+       label = ""
 
-    # Ngram
-    #ngram = n_gram.Ngram(n, training_tweets, d, v)
-    #ngram.test_all(testing_tweets)
-    #ngram_scores = ngram.get_scores()
+       if likelyClass == correctClass:
+           label = "correct"
+       else:
+           label = "wrong"
 
-    # Summing the two models
-    #merged_score_array = []
-    #for i in range(len(ngram_scores)):
-    #   merged_scores = merge_two_dicts(ngram_scores[i], vocab_scores[i])
-    #   merged_score_array.append(merged_scores)
+       output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+    output.create_evaluation_file("normal", v, n, d)
+    print("Writing the evaluation file...")
 
-        # Writing trace file
-    #print("Writing the trace file...")
-    #for i in range(len(testing_tweets)):
-    #   dict_scores = ngram_scores[i]
-    #   likelyClass = max(dict_scores, key=dict_scores.get).value
-    #   maxScore = max(dict_scores.values())
-    #   correctClass = testing_tweets[i].get_language()
-    #   label = ""
-
-    #   if likelyClass == correctClass:
-    #       label = "correct"
-    #   else:
-    #       label = "wrong"
-
-    #   output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
-    #output.create_evaluation_file("normal", v, n, d)
-    #print("Writing the evaluation file...")
-
-    #print("Completed the classification!")
+    print("Completed the classification!")
 
 
 main()
