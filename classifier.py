@@ -18,6 +18,21 @@ def merge_two_dicts(x, y):
         z[f[0]] = f[1] + b[1]
     return z
 
+def generate_trace_file(v, n, d, output, tweets, scores):
+    for i in range(len(tweets)):
+        dict_scores = scores[i]
+        likelyClass = max(dict_scores, key=dict_scores.get).value
+        maxScore = max(dict_scores.values())
+        correctClass = tweets[i].get_language()
+        label = ""
+
+        if likelyClass == correctClass:
+            label = "correct"
+        else:
+            label = "wrong"
+
+        output.create_trace_file("normal", v, n, d, tweets[i].get_id(), likelyClass, maxScore, tweets[i].get_language(), label)
+
 
 def main():
     the_input = input_parser.InputParser(inputPath)
@@ -62,8 +77,6 @@ def main():
         testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
                                           tweet_testing_messages[i]))
     # MODEL 1
-    # ye
-    # Ngram
     ngram = n_gram.Ngram(n, training_tweets, d, v)
     ngram.test_all(testing_tweets)
     ngram_scores = ngram.get_scores()
@@ -75,27 +88,22 @@ def main():
     corpus_testing_info = corpus_testing.Corpus(v, testing_tweets)
     model_2.test(v, testing_tweets, corpus_testing_info)
 
-    # Writing trac file for model 1
-    for i in range(len(testing_tweets)):
-        dict_scores = ngram_scores[i]
-        likelyClass = max(dict_scores, key=dict_scores.get).value
-        maxScore = max(dict_scores.values())
-        correctClass = testing_tweets[i].get_language()
-        label = ""
+    # Writing track file for model 1
+    generate_trace_file(v, n, d, output, testing_tweets, ngram_scores)
 
-        if likelyClass == correctClass:
-            label = "correct"
-        else:
-            label = "wrong"
-
-        output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+    # Writing evaluation file for model 1
     output.create_evaluation_file("normal", v, n, d)
-    print("Writing the evaluation file...")
+    print("Writing the evaluation file for Model 1...")
 
+    # Writing track file for model 2
+    naive_scores = model_2.init_dict(model_2.get_scores())
+    generate_trace_file(v, n, d, output, testing_tweets, naive_scores)
+    
+    # Writing evaluation file for model 2
     output.create_evaluation_file("normal", v, n, d)
-    print("Writing the evaluation file...")
+    print("Writing the evaluation file for Model 2...")
 
-    print("Completed the classification!")
+    print("Completed both classification!")
 
 
 main()
