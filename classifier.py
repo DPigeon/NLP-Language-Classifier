@@ -1,7 +1,8 @@
-import corpus
+import corpus_training
+import corpus_testing
 import input_parser
 import output_parser
-import vocabulary
+import naive_bayes
 import n_gram
 import tweet
 import language
@@ -60,45 +61,35 @@ def main():
     for i in range(len(tweet_testing_ids)):
         testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
                                           tweet_testing_messages[i]))
-
-    corpus_info = corpus.Corpus(v, training_tweets)
-    # to get all letters in corpus --> corpus_info.determite_vocabulary()['letters']
-    # to get the size of corpus --> corpus_info.determite_vocabulary()['char_size']
-    print(corpus_info.determite_vocabulary()['letters'])
-
+    # MODEL 1
+    # ye
     # Ngram
-    ngram = n_gram.Ngram(n, training_tweets, d, v)
-    ngram.test_all(testing_tweets)
-    ngram_scores = ngram.get_scores()
+    #ngram = n_gram.Ngram(n, training_tweets, d, v)
+    #ngram.test_all(testing_tweets)
+    #ngram_scores = ngram.get_scores()
 
-    # Vocabulary
-    #vocab = vocabulary.Vocabulary(v, training_tweets)
-    #vocab.train(v, d, training_tweets)
-    #vocab.test(v, testing_tweets)
-    #vocab_scores = vocab.init_dict(vocab.get_scores())
+    # MODEL 2
+    corpus_training_info = corpus_training.Corpus(v, training_tweets)
+    model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training_info)
+    # Testing
+    corpus_testing_info = corpus_testing.Corpus(v, testing_tweets)
+    model_2.test(v, testing_tweets, corpus_testing_info)
 
-
-    # Summing the two models
-    #merged_score_array = []
-    #for i in range(len(ngram_scores)):
-    #   merged_scores = merge_two_dicts(ngram_scores[i], vocab_scores[i])
-    #   merged_score_array.append(merged_scores)
-
-        # Writing trace file
+    # Writing trace file for model 2
     print("Writing the trace file...")
     for i in range(len(testing_tweets)):
-      dict_scores = ngram_scores[i]
-      likelyClass = max(dict_scores, key=dict_scores.get).value
-      maxScore = max(dict_scores.values())
-      correctClass = testing_tweets[i].get_language()
-      label = ""
+       dict_scores = model_2.init_dict(model_2.get_scores())[i]
+       likelyClass = max(dict_scores, key=dict_scores.get).value
+       maxScore = max(dict_scores.values())
+       correctClass = testing_tweets[i].get_language()
+       label = ""
 
-      if likelyClass == correctClass:
-          label = "correct"
-      else:
-          label = "wrong"
+       if likelyClass == correctClass:
+           label = "correct"
+       else:
+           label = "wrong"
 
-      output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+       output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
     output.create_evaluation_file("normal", v, n, d)
     print("Writing the evaluation file...")
 
