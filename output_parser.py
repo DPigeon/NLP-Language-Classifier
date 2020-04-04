@@ -90,7 +90,7 @@ class EvaluationOutputFile:
         if self.model == "normal":
             trace_file = "output/trace_" + self.v + "_" + self.n + "_" + self.d + ".txt"
         else:
-            trace_file = "output/trace_myModel.txt"  # May have to change that name later
+            trace_file = "output/trace_myModel_" + self.v + "_" + self.n + "_" + self.d + ".txt"  # May have to change that name later
 
         with open(trace_file, mode='r', encoding='utf-8-sig') as file:
             for line in file:
@@ -127,7 +127,7 @@ class EvaluationOutputFile:
         if self.model == "normal":
             file_name = "output/eval_" + self.v + "_" + self.n + "_" + self.d + ".txt"
         else:
-            file_name = "output/trace_myModel.txt"  # May have to change that name later
+            file_name = "output/eval_myModel_" + self.v + "_" + self.n + "_" + self.d + ".txt"  # May have to change that name later
 
         return file_name
 
@@ -180,7 +180,7 @@ class OutputParser:
         if model == "normal":
             file_name = "output/trace_" + v + "_" + n + "_" + d + ".txt"
         else:
-            file_name = "output/trace_myModel.txt"  # May have to change that name later
+            file_name = "output/trace_myModel_" + v + "_" + n + "_" + d + ".txt"  # May have to change that name later
         return file_name
 
     def create_evaluation_file(self, model, v, n, d):

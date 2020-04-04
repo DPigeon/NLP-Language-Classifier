@@ -9,6 +9,7 @@ import language
 
 # The main file
 inputPath = "input/input.txt"
+model = 2 # if 1 --> Model 1, if 2 --> Model 2
 
 
 def merge_two_dicts(x, y):
@@ -30,7 +31,6 @@ def generate_trace_file(v, n, d, output, tweets, scores, model_type):
             label = "correct"
         else:
             label = "wrong"
-
         output.create_trace_file(model_type, v, n, d, tweets[i].get_id(), likelyClass, maxScore, tweets[i].get_language(), label)
 
 
@@ -43,10 +43,6 @@ def main():
     d = the_input.get_smoothing_value()
     training_file = the_input.get_training_file()
     testing_file = the_input.get_testing_file()
-
-    # Creating the trace file
-    output = output_parser.OutputParser()
-    output.init_trace_file("normal", v, n, d)  # For our first model with hyper-parameters
 
     # Reading the training set
     the_input.read_set_file("training")
@@ -76,31 +72,42 @@ def main():
     for i in range(len(tweet_testing_ids)):
         testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
                                           tweet_testing_messages[i]))
-    # MODEL 1
-    #ngram = n_gram.Ngram(n, training_tweets, d, v)
-    #ngram.test_all(testing_tweets)
-    #ngram_scores = ngram.get_scores()
 
-    # MODEL 2
-    corpus_training_info = corpus_training.Corpus(v, training_tweets)
-    model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training_info)
-    corpus_testing_info = corpus_testing.Corpus(v, testing_tweets)
-    model_2.test(v, testing_tweets, corpus_testing_info)
+    if model == 1:
+        # Creating the trace file for Model 1
+        output = output_parser.OutputParser()
+        output.init_trace_file("normal", v, n, d)  # For our first model with hyper-parameters
 
-    # Writing track file for model 1
-    #generate_trace_file(v, n, d, output, testing_tweets, ngram_scores, "normal")
+        # MODEL 1
+        ngram = n_gram.Ngram(n, training_tweets, d, v)
+        ngram.test_all(testing_tweets)
+        ngram_scores = ngram.get_scores()
 
-    # Writing evaluation file for model 1
-    #output.create_evaluation_file("normal", v, n, d)
-    #print("Writing the evaluation file for Model 1...")
+        # Writing track file for model 1
+        generate_trace_file(v, n, d, output, testing_tweets, ngram_scores, "normal")
 
-    # Writing track file for model 2
-    naive_scores = model_2.init_dict(model_2.get_scores())
-    generate_trace_file(v, n, d, output, testing_tweets, naive_scores, "other")
-    
-    # Writing evaluation file for model 2
-    output.create_evaluation_file("normal", v, n, d)
-    print("Writing the evaluation file for Model 2...")
+        # Writing evaluation file for model 1
+        output.create_evaluation_file("normal", v, n, d)
+        print("Writing the evaluation file for Model 1...")
+
+    if model == 2:
+        # Creating the trace file for Model 2
+        output = output_parser.OutputParser()
+        output.init_trace_file("other", v, n, d)  # For our first model with hyper-parameters
+
+        # MODEL 2
+        corpus_training_info = corpus_training.Corpus(v, training_tweets)
+        model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training_info)
+        corpus_testing_info = corpus_testing.Corpus(v, testing_tweets)
+        model_2.test(v, testing_tweets, corpus_testing_info)
+
+        # Writing track file for model 2
+        naive_scores = model_2.init_dict(model_2.get_scores())
+        generate_trace_file(v, n, d, output, testing_tweets, naive_scores, "other")
+        
+        # Writing evaluation file for model 2
+        output.create_evaluation_file("other", v, n, d)
+        print("Writing the evaluation file for Model 2...")
 
     print("Completed both classification!")
 
