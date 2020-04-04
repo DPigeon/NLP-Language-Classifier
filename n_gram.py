@@ -42,6 +42,7 @@ class Ngram:
     # function optimized to run on gpu
     # @jit
     def generate_vocab(self, gram, v):
+        vocab = {}
 
         chosen_alphabet = list()
         if v == 0:
@@ -50,8 +51,9 @@ class Ngram:
             chosen_alphabet = list(string.ascii_letters)
         elif v == 2:
             chosen_alphabet = generate_isalpha()
+            if gram != 1:
+                return vocab
         self.chosen_alphabet = dict.fromkeys(chosen_alphabet)
-        vocab = {}
         if gram == 1:
             vocab = {k: dict.fromkeys(language.to_dict(self.smoothing), self.smoothing) for k in chosen_alphabet}
         elif gram == 2:
@@ -86,7 +88,10 @@ class Ngram:
         for tweet in tweets:
             message = tweet.get_message().translate(
                 str.maketrans('', '', string.punctuation))  # Removes all punctuation
-            message = [x for x in list(message) if x in self.chosen_alphabet]
+            if self.v == 2 and gram != 1:
+                message = [x for x in list(message) if x.isalpha()]
+            else:
+                message = [x for x in list(message) if x in self.chosen_alphabet]
             self.total_tweets_per_language[language.Language(tweet.get_language())] += 1
 
             for character_count in range(len(message) - gram + 1):  # Getting one character at a time
@@ -146,7 +151,11 @@ class Ngram:
         score = {k: math.log10(self.priors[k]) for k in self.priors}
 
         message = tweet.get_message().translate(str.maketrans('', '', string.punctuation))  # Removes all punctuation
-        message = [x for x in list(message) if x in self.chosen_alphabet]  # Ignore character not in vocabulary
+
+        if self.v == 2 and self.n != 1:
+            message = [x for x in list(message) if x.isalpha()]
+        else:
+            message = [x for x in list(message) if x in self.chosen_alphabet]
 
         for character_count in range(len(message) - self.n + 1):  # Getting one character_count at a time
             token = message[character_count:character_count + self.n]
