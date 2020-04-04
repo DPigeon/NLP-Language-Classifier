@@ -64,9 +64,9 @@ def main():
     # MODEL 1
     # ye
     # Ngram
-    ngram = n_gram.Ngram(n, training_tweets, d, v)
-    ngram.test_all(testing_tweets)
-    ngram_scores = ngram.get_scores()
+    #ngram = n_gram.Ngram(n, training_tweets, d, v)
+    #ngram.test_all(testing_tweets)
+    #ngram_scores = ngram.get_scores()
 
     # MODEL 2
     corpus_training_info = corpus_training.Corpus(v, training_tweets)
