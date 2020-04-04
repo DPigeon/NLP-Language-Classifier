@@ -21,6 +21,10 @@ class Ngram:
         self.scores = []
         self.v = int(v)
         self.chosen_alphabet = {}
+        self.total_tweets_per_language = language.to_dict(0)
+        self.total_number_of_character = {}
+        self.priors = {}
+
         print("Training the data by calculating the frequencies of each characters")
 
         if self.n == 1:
@@ -69,38 +73,48 @@ class Ngram:
 
         # Generates the possible vocab
 
+    def build_priors(self):
+        priors = copy.deepcopy(self.total_tweets_per_language)
+        for entry in self.total_tweets_per_language:
+            priors[entry] = (self.total_tweets_per_language[entry] / sum(self.total_tweets_per_language.values()))
+        return priors
+
     # Build the gram frequency in order to build the model based on the corpus
     def build_gram_frequency(self, tweets, gram):
         gram_frequency = self.generate_vocab(gram, self.v)
-
+        total_gram_frequency = language.to_dict(0)
         for tweet in tweets:
             message = tweet.get_message().translate(
                 str.maketrans('', '', string.punctuation))  # Removes all punctuation
             message = [x for x in list(message) if x in self.chosen_alphabet]
+            self.total_tweets_per_language[language.Language(tweet.get_language())] += 1
 
             for character_count in range(len(message) - gram + 1):  # Getting one character at a time
                 token = message[character_count:character_count + gram]
                 token = "".join(token)  # Lower casing everything
                 if token in gram_frequency.keys():
+                    total_gram_frequency[language.Language(tweet.get_language())] += 1
                     gram_frequency[token][language.Language(tweet.get_language())] = gram_frequency.get(
                         token).get(language.Language(tweet.get_language())) + 1
                 else:
                     gram_frequency[token] = language.to_dict(self.smoothing)
                     gram_frequency[token][language.Language(tweet.get_language())] = gram_frequency.get(
                         token).get(language.Language(tweet.get_language())) + 1
-
+        self.total_number_of_character = {key: total_gram_frequency[key] + self.smoothing * len(gram_frequency) for key
+                                          in
+                                          total_gram_frequency.keys()}
         return gram_frequency
 
     """ Method that trains models based on the n provided to the gram """
 
     def build_gram_model(self, n, tweets):
         gram_model_fetched = self.build_gram_frequency(tweets, n)
-
+        self.priors = self.build_priors()
         # Given a character, what's the probability that this character is of a language
         gram_model = copy.deepcopy(gram_model_fetched)
         for entry in gram_model_fetched:
             for l in iter(language.Language):
-                gram_model[entry][l] = (gram_model_fetched[entry][l] / sum(gram_model_fetched[entry].values()))
+                gram_model[entry][l] = (gram_model_fetched[entry][l] / self.total_number_of_character[l])
 
         return gram_model
 
@@ -129,7 +143,7 @@ class Ngram:
     # Method that takes in a tweet and outputs a score, from the score you can calculate which language is most
     # probable.
     def test(self, tweet):
-        score = language.to_dict(0)  # initialize the score table
+        score = {k: math.log10(self.priors[k]) for k in self.priors}
 
         message = tweet.get_message().translate(str.maketrans('', '', string.punctuation))  # Removes all punctuation
         message = [x for x in list(message) if x in self.chosen_alphabet]  # Ignore character not in vocabulary
@@ -147,4 +161,3 @@ class Ngram:
 
     def get_scores(self):
         return self.scores
-

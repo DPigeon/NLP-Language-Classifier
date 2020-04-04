@@ -64,9 +64,9 @@ def main():
     # MODEL 1
     # ye
     # Ngram
-    #ngram = n_gram.Ngram(n, training_tweets, d, v)
-    #ngram.test_all(testing_tweets)
-    #ngram_scores = ngram.get_scores()
+    ngram = n_gram.Ngram(n, training_tweets, d, v)
+    ngram.test_all(testing_tweets)
+    ngram_scores = ngram.get_scores()
 
     # MODEL 2
     corpus_training_info = corpus_training.Corpus(v, training_tweets)
@@ -75,21 +75,23 @@ def main():
     corpus_testing_info = corpus_testing.Corpus(v, testing_tweets)
     model_2.test(v, testing_tweets, corpus_testing_info)
 
-    # Writing trace file for model 2
-    print("Writing the trace file...")
+    # Writing trac file for model 1
     for i in range(len(testing_tweets)):
-       dict_scores = model_2.init_dict(model_2.get_scores())[i]
-       likelyClass = max(dict_scores, key=dict_scores.get).value
-       maxScore = max(dict_scores.values())
-       correctClass = testing_tweets[i].get_language()
-       label = ""
+        dict_scores = ngram_scores[i]
+        likelyClass = max(dict_scores, key=dict_scores.get).value
+        maxScore = max(dict_scores.values())
+        correctClass = testing_tweets[i].get_language()
+        label = ""
 
-       if likelyClass == correctClass:
-           label = "correct"
-       else:
-           label = "wrong"
+        if likelyClass == correctClass:
+            label = "correct"
+        else:
+            label = "wrong"
 
-       output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+        output.create_trace_file("normal", v, n, d, testing_tweets[i].get_id(), likelyClass, maxScore, testing_tweets[i].get_language(), label)
+    output.create_evaluation_file("normal", v, n, d)
+    print("Writing the evaluation file...")
+
     output.create_evaluation_file("normal", v, n, d)
     print("Writing the evaluation file...")
 
