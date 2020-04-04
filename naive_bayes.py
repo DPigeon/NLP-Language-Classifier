@@ -55,7 +55,7 @@ class NaiveBayes:
         char_size = corpus.determite_vocabulary().get("char_size")
         letters = corpus.determite_vocabulary().get("letters")
         characters = corpus.get_characters()
-        print(len(characters[0]))
+        print(corpus.get_characters())
         score = 0
 
         print("Testing the model...")

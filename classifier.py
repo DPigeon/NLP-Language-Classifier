@@ -62,14 +62,14 @@ def main():
                                           tweet_testing_messages[i]))
 
     # Construct the training corpus
-    corpus_training = corpus.Corpus(v, training_tweets)
+    corpus_training = corpus.Corpus(v, testing_tweets)
     # Vocabulary naive bayes 2nd model & train
     model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training)
 
     # Construct the testing corpus
     corpus_testing = corpus.Corpus(v, testing_tweets)
     # Test the 2nd model
-    model_2.test(v, testing_tweets, corpus_testing)
+    model_2.test(v, testing_tweets, corpus.Corpus(v, testing_tweets))
     #model_2_scores = model_2.init_dict(model_2.get_scores())
 
     # Ngram
