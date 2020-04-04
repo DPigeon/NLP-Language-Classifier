@@ -5,10 +5,6 @@ import string
 
 
 class NaiveBayes:
-    low_letters = list(string.ascii_lowercase)
-    up_letters = list(string.ascii_uppercase)
-    alpha_letter = dict()
-
     training_table_chars = []
     training_table_classes = []
     scores = []
@@ -36,6 +32,7 @@ class NaiveBayes:
                     letters[j])  # Getting the number of characters in each languages class
                 sum_j_i = sum_j_i + len(characters[t])  # Getting the sum of all characters in each language class
         prob_j_i = (count_j_i + float(d)) / (sum_j_i + float(d) * len(letters))  # with smoothing d
+        print(prob_j_i)
         return prob_j_i
 
     def train(self, v, d, tweets, corpus):
@@ -49,6 +46,7 @@ class NaiveBayes:
             self.training_table_classes.append(self.class_probability(i, tweets, characters))
             for j in range(char_size):  # For all characters in vocabulary j
                 self.training_table_chars.append(self.cond_probability(i, j, tweets, letters, characters, lang, d))
+        #print(self.training_table_chars)
 
     def test(self, v, tweets, corpus):
         lang = language.Language

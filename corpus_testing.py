@@ -27,8 +27,9 @@ class Corpus:
                     if letter.islower() or letter.isupper():
                         self.characters[i].append(letter)
                 elif self.v == '2':
-                    if letter.islower() or letter.isupper() or letter.isalpha():
+                    if self.check_isalpha(letter):
                         self.characters[i].append(letter)
+        print(self.characters)
 
     def determite_vocabulary(self): # Used to get all the information needed in the corpus
         char_size = 0
@@ -51,13 +52,17 @@ class Corpus:
         return info
 
     def get_isalpha(self):
-        count = 0
         # unicode = 17 planes of 2**16 symbols
         for codepoint in range(17 * 2**16):
             ch = chr(codepoint)
             if ch.isalpha():
-                self.alpha_letters[str(count)] = ch
-                count = count + 1
+                self.alpha_letters[ch] = ch
+    
+    def check_isalpha(self, letter):
+        if letter in self.alpha_letters:
+            return True
+        else:
+            return False
 
     def get_characters(self):
         return self.characters

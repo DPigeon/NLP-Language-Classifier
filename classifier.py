@@ -18,7 +18,7 @@ def merge_two_dicts(x, y):
         z[f[0]] = f[1] + b[1]
     return z
 
-def generate_trace_file(v, n, d, output, tweets, scores):
+def generate_trace_file(v, n, d, output, tweets, scores, model_type):
     for i in range(len(tweets)):
         dict_scores = scores[i]
         likelyClass = max(dict_scores, key=dict_scores.get).value
@@ -31,7 +31,7 @@ def generate_trace_file(v, n, d, output, tweets, scores):
         else:
             label = "wrong"
 
-        output.create_trace_file("normal", v, n, d, tweets[i].get_id(), likelyClass, maxScore, tweets[i].get_language(), label)
+        output.create_trace_file(model_type, v, n, d, tweets[i].get_id(), likelyClass, maxScore, tweets[i].get_language(), label)
 
 
 def main():
@@ -77,27 +77,26 @@ def main():
         testing_tweets.append(tweet.Tweet(tweet_testing_ids[i], tweet_testing_usernames[i], tweet_testing_languages[i],
                                           tweet_testing_messages[i]))
     # MODEL 1
-    ngram = n_gram.Ngram(n, training_tweets, d, v)
-    ngram.test_all(testing_tweets)
-    ngram_scores = ngram.get_scores()
+    #ngram = n_gram.Ngram(n, training_tweets, d, v)
+    #ngram.test_all(testing_tweets)
+    #ngram_scores = ngram.get_scores()
 
     # MODEL 2
     corpus_training_info = corpus_training.Corpus(v, training_tweets)
     model_2 = naive_bayes.NaiveBayes(v, d, training_tweets, corpus_training_info)
-    # Testing
     corpus_testing_info = corpus_testing.Corpus(v, testing_tweets)
     model_2.test(v, testing_tweets, corpus_testing_info)
 
     # Writing track file for model 1
-    generate_trace_file(v, n, d, output, testing_tweets, ngram_scores)
+    #generate_trace_file(v, n, d, output, testing_tweets, ngram_scores, "normal")
 
     # Writing evaluation file for model 1
-    output.create_evaluation_file("normal", v, n, d)
-    print("Writing the evaluation file for Model 1...")
+    #output.create_evaluation_file("normal", v, n, d)
+    #print("Writing the evaluation file for Model 1...")
 
     # Writing track file for model 2
     naive_scores = model_2.init_dict(model_2.get_scores())
-    generate_trace_file(v, n, d, output, testing_tweets, naive_scores)
+    generate_trace_file(v, n, d, output, testing_tweets, naive_scores, "other")
     
     # Writing evaluation file for model 2
     output.create_evaluation_file("normal", v, n, d)
