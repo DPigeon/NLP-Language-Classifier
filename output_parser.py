@@ -68,11 +68,11 @@ class EvaluationOutputFile:
         return self.f1_measure_dict
 
     def calculate_macro_f1(self):
-        return sum(self.f1_measure_dict.values()) / len(self.f1_measure_dict)
+        return division(sum(self.f1_measure_dict.values()),len(self.f1_measure_dict))
 
     def calculate_weighted_f1(self):
         calculated_weight = {x: self.f1_measure_dict[x] * self.weighted_values_dict[x] for x in self.f1_measure_dict}
-        return sum(calculated_weight.values()) / sum(self.weighted_values_dict.values())
+        return division(sum(calculated_weight.values()), sum(self.weighted_values_dict.values()))
 
     # What proportion of the instances in the class of interest are labelled correctly?
     # e.g. How many english were actually english
