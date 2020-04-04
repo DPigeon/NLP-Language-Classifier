@@ -47,7 +47,7 @@ class EvaluationOutputFile:
 
     def calculate_accuracy(self, number_of_wrong_label):
 
-        if number_of_wrong_label is not 0:
+        if number_of_wrong_label != 0:
             self.accuracy = 1 - (number_of_wrong_label / len(self.entries))
         else:
             self.accuracy = 1
@@ -59,7 +59,7 @@ class EvaluationOutputFile:
 
     def calculate_recall(self):
         total_dict = merge_two_dicts(self.true_positive_dict, self.false_positive_dict)
-        self.recall_dict = {x: float(self.true_positive_dict[x]) / total_dict[x] for x in total_dict}
+        self.recall_dict = {x: division(float(self.true_positive_dict[x]), total_dict[x]) for x in total_dict}
 
     # 2PR/P+R
     def calculate_f1_measure(self):
