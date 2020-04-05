@@ -20,6 +20,7 @@ class NaiveBayes:
             if tweets[t].get_language() == i.value:
                 count_doc_i = count_doc_i + 1
         prob_i = count_doc_i / count_all_doc
+        #print(prob_i)
         return prob_i
 
     def cond_probability(self, i, j, tweets, letters, characters, lang, d):  # example: compute P('a'|eu) = count('a', eu) / sum(count('a', eu))
@@ -27,7 +28,7 @@ class NaiveBayes:
         sum_j_i = 0
         prob_j_i = 0
         for t in range(len(characters)):
-            if tweets[t].get_language() == i.value:
+            if tweets[t].get_language() == i.value: # blocks here
                 count_j_i = count_j_i + characters[t].count(
                     letters[j])  # Getting the number of characters in each languages class
                 sum_j_i = sum_j_i + len(characters[t])  # Getting the sum of all characters in each language class

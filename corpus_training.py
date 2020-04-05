@@ -44,9 +44,9 @@ class Corpus:
             char_size = len(self.low_letters) + len(self.up_letters)
             letters = (self.low_letters + self.up_letters).copy()  # Merge the two
         elif self.v == '2':
-            list_isalpha = self.alpha_voc
-            char_size = len(list_isalpha)
-            letters = list_isalpha.copy() # Merge the three
+            new_list = list(dict.fromkeys(self.alpha_voc)) # Removes duplicates from the list (must be unique character)
+            char_size = len(new_list)
+            letters = new_list.copy()
 
         info = dict()
         info['char_size'] = char_size
