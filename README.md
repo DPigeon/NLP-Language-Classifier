@@ -4,6 +4,20 @@ https://github.com/DPigeon/NLP-Language-Classifier
 
 A Naive Bayes classification for NLP to determine the most likely language of a tweet
 
+First, install Miniconda with Python 3.7 at
+
+```
+https://docs.conda.io/en/latest/miniconda.html
+```
+
+You also need NumPy to run the project.
+
+Install NumPy with
+
+```
+conda install numpy
+```
+
 ## Run
 
 To run the program, you must create an output folder in the root of the project. Then, you must edit the input.txt file in input folder.
